@@ -4,5 +4,5 @@
 
 Предметы:
 
-- [Проектирование инфокоммуникационных систем](term-1/design-of-infocommunication-systems/README.md)
-- [Основы кибербезопасности](term-1/fundamentals-of-cyber-security/README.md)
+- [Проектирование инфокоммуникационных систем](term-1/design-of-infocommunication-systems)
+- [Основы кибербезопасности](term-1/fundamentals-of-cyber-security)
