@@ -1,0 +1,38 @@
+@startuml
+
+node Браузер as browser {
+    [Веб-приложение]
+}
+
+node Сервер as server {
+    node "Сервер приложений" as server_app {
+        [Пользовательский интерфейс] as ui
+        [Подсистема API] as api_handler
+        [Подсистема поиска] as search
+        [Подсистема изображений] as images
+        [Подсистема синхронизации] as sync
+        [Подсистема аналитики] as analytics
+    }
+}
+
+node "Сервер БД" as postgres_server {
+    node PostgreSQL as postgres
+}
+
+node "Сервер БД" as clickhouse_server {
+    node ClickHouse as clickhouse
+}
+
+node "Сервер БД" as s3_server {
+    node S3 as s3
+}
+
+node OpenStreetMap as openstreetmap
+
+browser -- server : HTTPS
+server -- postgres_server : SQL
+server -- clickhouse_server : SQL
+server -- s3_server : HTTPS
+server -- openstreetmap : HTTPS
+
+@enduml

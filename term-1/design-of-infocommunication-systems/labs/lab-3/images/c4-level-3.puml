@@ -1,0 +1,28 @@
+@startuml
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container(web_app, "Веб-приложение", "Пользовательский интерфейс в виде веб-приложения")
+ContainerDb(postgres, "PostgreSQL", "Хранилище текстовых и числовых данных")
+ContainerDb(s3, "S3", "Хранилище бинарных данных")
+ContainerDb(clickhouse, "ClickHouse", "Хранилище аналитических данных")
+
+Container_Ext(openstreetmap, "OpenStreetMap", "Предоставляет данные о расположении точек")
+
+Container_Boundary(server, "Сервер", $link="https://github.com/plantuml-stdlib/C4-PlantUML") {
+    Component(api, "Подсистема API", "Маршрутизирует запросы в остальные подсистемы")
+    Component(images, "Подсистема изображений", "Обрабатывает запросы чтения и изменения изображений")
+    Component(analytics, "Подсистема аналитики", "Обрабатывает запросы получения аналитических данных")
+    Component(search, "Подсистема поиска", "Обрабатывает запросы поиска точек")
+    Component(sync, "Подсистема синхронизации", "Синхронизирует данные о точках из OpenStreetMap")
+
+    Rel(web_app, api, "Запрашивает информацию о точках", "HTTPS")
+    Rel(api, images, "Передает информацию о запросе получения изображений")
+    Rel(api, search, "Передает информацию о запросе поиска")
+    Rel(api, analytics, "Передает информацию о запросе получения аналитики")
+    Rel(search, postgres, "Запрашивает информацию о точках", "SQL")
+    Rel(images, s3, "Запрашивает изображения", "HTTPS")
+    Rel(analytics, clickhouse, "Запрашивает аналитические данные", "SQL")
+    Rel(sync, postgres, "Обновляет информацию о точках", "SQL")
+    Rel(sync, openstreetmap, "Запрашивает информацию о расположении точек", "HTTPS")
+}
+@enduml

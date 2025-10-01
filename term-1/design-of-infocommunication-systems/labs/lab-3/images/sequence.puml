@@ -1,0 +1,33 @@
+@startuml
+actor Пользователь as user
+participant "Пользовательский интерфейс" as ui
+participant OpenRestaMap as openrestamap
+participant PostgreSQL as postgres
+participant ClickHouse as clickhouse
+participant S3 as s3
+
+user -> ui : выбор области на карте
+ui -> openrestamap : передача выбранной области
+openrestamap -> postgres : поиск точек в заданной области
+postgres -> openrestamap : список точек из заданной области
+openrestamap -> clickhouse : сохранение аналитики о запрошенных точках
+openrestamap -> ui : список точек из заданной области
+ui -> user : отображение точек на карте
+
+user -> ui : выбор точки на карте
+ui -> openrestamap : запрос информации о точке
+openrestamap -> postgres : поиск информации о точке
+postgres -> openrestamap : информация о точке
+openrestamap -> ui : информация о точке
+ui -> user : отображение информации о точке
+
+user -> ui : открытие информации о меню
+ui -> openrestamap : запрос информации о меню
+openrestamap -> postgres : поиск информации о меню
+postgres -> openrestamap : информация о меню
+openrestamap -> s3 : запрос изображений блюд
+s3 -> openrestamap : изображения блюд
+openrestamap -> clickhouse : сохранение аналитики о запрошенном меню
+openrestamap -> ui : информация о меню и изображения блюд
+ui -> user : отображение меню
+@enduml

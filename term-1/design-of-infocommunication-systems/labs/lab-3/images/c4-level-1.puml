@@ -1,0 +1,9 @@
+@startuml
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь")
+System(openrestamap, "OpenRestaMap", "Обработка запросов просмотра и поиска точек")
+System_Ext(openstreetmap, "OpenStreetMap", "Предоставляет данные о расположении точек")
+Rel(user, openrestamap, "Просматривает и ищет информацию о точках")
+Rel(openrestamap, openstreetmap, "Запрашивает информацию о расположении точек")
+@enduml

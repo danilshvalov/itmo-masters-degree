@@ -1,0 +1,23 @@
+@startuml
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь")
+
+System_Boundary(openrestamap, "OpenRestaMap", $link="https://github.com/plantuml-stdlib/C4-PlantUML") {
+    Container(web_app, "Веб-приложение", "Пользовательский интерфейс в виде веб-приложения")
+    Container(server, "Сервер", "Обработка запросов просмотра и поиска точек")
+    ContainerDb(postgres, "PostgreSQL", "Хранилище текстовых и числовых данных")
+    ContainerDb(s3, "S3", "Хранилище бинарных данных")
+    ContainerDb(clickhouse, "ClickHouse", "Хранилище аналитических данных")
+
+    Rel(user, web_app, "Просматривает и ищет информацию о точках", "HTTPS")
+    Rel(web_app, server, "Запрашивает информацию о точках", "HTTPS")
+    Rel(server, postgres, "Запрашивает информацию о точках", "SQL")
+    Rel(server, s3, "Запрашивает изображения", "HTTPS")
+    Rel(server, clickhouse, "Запрашивает аналитические данные", "SQL")
+}
+
+Container_Ext(openstreetmap, "OpenStreetMap", "Предоставляет данные о расположении точек")
+Rel(server, openstreetmap, "Запрашивает информацию о расположении точек", "HTTPS")
+
+@enduml

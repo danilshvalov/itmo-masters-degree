@@ -1,0 +1,29 @@
+@startuml
+
+[Пользовательский интерфейс] as ui
+[Подсистема API] as api_handler
+[Подсистема поиска] as search
+[Подсистема изображений] as images
+[Подсистема синхронизации] as sync
+[Подсистема аналитики] as analytics
+[PostgreSQL] as postgres
+[ClickHouse] as clickhouse
+[S3] as s3
+[OpenStreetMap] as openstreetmap
+
+() "HTTP REST API" as api
+() "HTTP REST API" as osm_api
+
+ui --> api
+api --> api_handler
+api_handler ..> search
+api_handler ..> images
+api_handler ..> analytics
+sync --> osm_api
+osm_api --> openstreetmap
+sync ..> postgres
+search ..> postgres
+analytics ..> clickhouse
+images ..> s3
+
+@enduml
