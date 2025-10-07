@@ -1,4 +1,7 @@
 .DS_Store
 *copy*.odt
+*copy*.docx
 Лабораторная*.pdf
 *.rsf copy*
+obj/
+bin/
