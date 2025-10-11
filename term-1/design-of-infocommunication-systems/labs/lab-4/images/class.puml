@@ -1,0 +1,132 @@
+@startuml
+class MenuItemIngredient {
+    name : String
+    type : String
+}
+
+class MenuItem {
+    name : String
+    description : String
+    imageId : Integer
+    price : Decimal
+    currency : String
+    grams : Decimal
+    kcal : Integer
+    proteins : Decimal
+    fats : Decimal
+    carbohydrates : Decimal
+    ingredients : List<MenuItemIngredient>
+}
+
+MenuItem *-- MenuItemIngredient
+
+class MenuCategory {
+    name : String
+    items : List<MenuItem>
+}
+
+MenuCategory *-- MenuItem
+
+class Menu {
+    pointId : Integer
+    description: String
+    categories : List<MenuCategory>
+}
+
+Menu *-- MenuCategory
+
+class Point {
+    id : Integer
+    version : Integer
+    latitude : Integer
+    longitude : Integer
+    tags : Map<String, String>
+}
+
+class PointsRepository {
+    List<Point> getPoints()
+    Point getPoint()
+}
+
+PointsRepository --> Point
+
+class MenusRepository {
+    Menu getMenu()
+    void upsertMenu(Menu menu)
+}
+
+MenusRepository --> Menu
+
+class Image {
+    id : Integer
+    data : List<bytes>
+}
+
+class ImagesRepository {
+    Image getImage()
+}
+
+ImagesRepository --> Image
+
+class Analytics {
+    name : String
+    startDate : Date
+    endDate : Date
+    values : List<float>
+}
+
+class AnalyticsRepository {
+    Analytics getAnalytics()
+}
+
+AnalyticsRepository --> Analytics
+
+class PointsManager {
+    pointsRepository : PointsRepository
+    List<Point> getPoints()
+    Point getPoint()
+}
+
+PointsManager o-- PointsRepository
+
+class MenuManager {
+    menuRepository : MenusRepository
+    Menu getMenu()
+    void upsertMenu(Menu menu)
+}
+
+MenuManager o-- MenusRepository
+
+class ImagesManager {
+    imagesRepository : ImagesRepository
+    Image getImage()
+}
+
+ImagesManager o-- ImagesRepository
+
+class AnalyticsManager {
+    analyticsRepository : AnalyticsRepository
+    Analytics getAnalytics()
+}
+
+AnalyticsManager o-- AnalyticsRepository
+
+class ApiManager {
+    pointsManager : PointsManager
+    menuManager : MenuManager
+    imagesManager : ImagesManager
+    analyticsManager : AnalyticsManager
+
+    Response getPoints(Request request)
+    Response getPoint(Request request)
+    Response getMenu(Request request)
+    Response upsertMenu(Request request)
+    Response getImage(Request request)
+    Response getAnalytics(Request request)
+}
+
+ApiManager o-- PointsManager
+ApiManager o-- MenuManager
+ApiManager o-- ImagesManager
+ApiManager o-- AnalyticsManager
+@enduml

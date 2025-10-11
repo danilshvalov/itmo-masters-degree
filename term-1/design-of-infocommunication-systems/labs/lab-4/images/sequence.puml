@@ -1,0 +1,47 @@
+@startuml
+actor Пользователь as user
+participant ApiManager as api
+participant PointsManager as points
+participant MenuManager as menu
+participant ImagesManager as images
+participant AnalyticsManager as analytics
+participant SyncManager as sync
+participant MenuRepository as menu_repository
+participant PointsRepository as points_repository
+participant AnalyticsRepository as clickhouse
+participant ImagesRepository as s3
+participant OpenStreetMap as openstreetmap
+
+user -> api : выполняет поиск точек
+api -> points : передает запросы поиска
+points -> points_repository : запрашивает информацию о соответствующих точках
+points_repository -> points : возвращает информацию о точках
+points -> api : возвращает ответ с содержимым точек
+api -> user : возвращает ответ с содержимым точек
+
+user -> api : запрашивает меню
+api -> menu : передает запросы меню
+menu -> menu_repository : запрашивает информацию о меню
+menu_repository -> menu : возвращает информацию о меню
+menu -> api : возвращает ответ с меню
+api -> user : возвращает ответ с меню
+
+user -> api: запрашивает изображения
+api -> images : передает запросы об изображениях
+images -> s3 : запрашивает содержимое изображений
+s3 -> images : возвращает содержимое изображений
+images -> api : возвращает ответ с содержимым изображений
+api -> user : возвращает ответ с содержимым изображений
+
+user -> api : запрашивает аналитическую информацию о точках
+api -> analytics : передает запрос на аналитику
+analytics -> clickhouse : запрашивает аналитическую информацию
+clickhouse -> analytics : возвращает аналитическую информацию
+analytics -> api : возвращает ответ с аналитической информацией
+api -> user : возвращает ответ с аналитической информацией
+
+sync -> openstreetmap : запрашивает информацию о точках
+openstreetmap -> sync : возвращает информацию о точках
+sync -> points_repository : обновляет информацию о точках
+
+@enduml
