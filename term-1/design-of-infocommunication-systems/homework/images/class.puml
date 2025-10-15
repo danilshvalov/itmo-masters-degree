@@ -1,0 +1,262 @@
+@startuml
+
+scale 1.5
+
+class Logger << Singleton >> {
+    {static} void debug(String message)
+    {static} void info(String message)
+    {static} void warning(String message)
+    {static} void error(String message)
+}
+
+class MenuItemIngredient {
+    name : String
+    type : String
+}
+
+class MenuItem {
+    name : String
+    description : String
+    imageId : Integer
+    price : Decimal
+    currency : String
+    grams : Decimal
+    kcal : Integer
+    proteins : Decimal
+    fats : Decimal
+    carbohydrates : Decimal
+    ingredients : List<MenuItemIngredient>
+}
+
+MenuItem *-- MenuItemIngredient
+
+class MenuCategory {
+    name : String
+    items : List<MenuItem>
+}
+
+MenuCategory *-- MenuItem
+
+class Menu {
+    pointId : Integer
+    description: String
+    categories : List<MenuCategory>
+}
+
+Menu *-- MenuCategory
+
+class Point {
+    id : Integer
+    version : Integer
+    latitude : Integer
+    longitude : Integer
+    tags : Map<String, String>
+}
+
+class PointsRepository {
+    List<Point> getPoints(PointsFilters filters)
+    Point getPoint()
+}
+
+PointsRepository --> Point
+
+class MenusRepository {
+    Menu getMenu()
+    void upsertMenu(Menu menu)
+}
+
+MenusRepository --> Menu
+
+class Image {
+    id : Integer
+    data : List<bytes>
+}
+
+class ImagesRepository {
+    Image getImage()
+}
+
+ImagesRepository --> Image
+
+class Analytics {
+    name : String
+    startDate : Date
+    endDate : Date
+    values : List<float>
+}
+
+class AnalyticsRepository {
+    Analytics getAnalytics()
+}
+
+AnalyticsRepository --> Analytics
+
+class Coordinates {
+    latitude : float
+    longitude : float
+}
+
+class SearchArea {
+    topLeft : Coordinates
+    bottomRight : Coordinates
+}
+
+SearchArea o-- Coordinates
+
+class PointsFilters {
+    searchArea : SearchArea
+    searchQuery : Optional<String>
+    visitTime : Optional<Time>
+    cuisines : Optional<List<String>>
+    ingredients : Optional<List<String>>
+    halalOnly : boolean
+    kosherOnly : boolean
+    leanOnly : boolean
+}
+
+PointsFilters o-- SearchArea
+
+class PointsFiltersBuilder {
+    searchArea : Optional<SearchArea>
+    searchQuery : Optional<String>
+    visitTime : Optional<Time>
+    cuisines : Optional<List<String>>
+    ingredients : Optional<List<String>>
+    halalOnly : boolean
+    kosherOnly : boolean
+    leanOnly : boolean
+
+    PointsFilters build()
+    void setSearchArea(SearchArea searchArea)
+    void setSearchQuery(String searchQuery)
+    void setVisitTime(Time visitTime)
+    void setCuisines(List<String> cuisines)
+    void setIngredients(List<String> ingredients)
+    void setHalalOnly()
+    void setKosherOnly()
+    void setLeanOnly()
+}
+
+PointsFiltersBuilder --> PointsFilters
+
+interface PointsSorter {
+    void sort(List<Point> points)
+}
+
+class NamePointsSorter {
+    void sort(List<Point> points)
+}
+
+PointsSorter <|.. NamePointsSorter
+
+class ProximityPointsSorter {
+    void sort(List<Point> points)
+}
+
+PointsSorter <|.. ProximityPointsSorter
+
+class DataFullnessPointsSorter {
+    void sort(List<Point> points)
+}
+
+PointsSorter <|.. DataFullnessPointsSorter
+
+class RelevancePointsSorter {
+    void sort(List<Point> points)
+}
+
+PointsSorter <|.. RelevancePointsSorter
+
+class PointsManager {
+    pointsRepository : PointsRepository
+    List<Point> getPoints(PointsFilters filters, List<PointSorter> sorters)
+    Point getPoint()
+}
+
+PointsManager o-- PointsRepository
+PointsManager --> PointsFilters
+PointsManager --> PointsFiltersBuilder
+PointsManager --> PointsSorter
+
+class MenuManager {
+    menuRepository : MenusRepository
+    Menu getMenu()
+    void upsertMenu(Menu menu)
+}
+
+MenuManager o-- MenusRepository
+
+class ImagesManager {
+    imagesRepository : ImagesRepository
+    Image getImage()
+}
+
+ImagesManager o-- ImagesRepository
+
+class AnalyticsManager {
+    analyticsRepository : AnalyticsRepository
+    Analytics getAnalytics()
+}
+
+AnalyticsManager o-- AnalyticsRepository
+
+class ApiManager {
+    handlers : List<ApiHandler>
+    Response handleRequest(Request request)
+}
+
+ApiManager *--- ApiHandler
+
+interface ApiHandler {
+    Response handleRequest(Request request)
+}
+
+class GetPointsHandler {
+    pointsManager : PointsManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. GetPointsHandler
+GetPointsHandler o-- PointsManager
+
+class GetPointHandler {
+    pointsManager : PointsManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. GetPointHandler
+GetPointHandler o-- PointsManager
+
+class GetMenuHandler {
+    menuManager : MenuManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. GetMenuHandler
+GetMenuHandler o-- MenuManager
+
+class UpsertMenuHandler {
+    menuManager : MenuManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. UpsertMenuHandler
+UpsertMenuHandler o-- MenuManager
+
+class GetImageHandler {
+    imagesManager : ImagesManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. GetImageHandler
+GetImageHandler o-- ImagesManager
+
+class GetAnalyticsHandler {
+    analyticsManager : AnalyticsManager
+    Response handleRequest(Request request)
+}
+
+ApiHandler <|.. GetAnalyticsHandler
+GetAnalyticsHandler o-- AnalyticsManager
+
+@enduml
